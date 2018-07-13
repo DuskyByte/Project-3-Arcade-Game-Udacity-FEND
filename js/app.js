@@ -30,12 +30,10 @@ Enemy.prototype.render = function() {
 //TODO: Create Player class to ensure proper functionality in a Frogger like game.
 
 var Player = function() {
+    this.y = 0;
+    this.x = 0;
     this.sprite = 'images/char-boy.png';
 };
-
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 
 //TODO: Create Player class methods (update, render, and handleInput) to ensure proper functionality in a Frogger like game.
 
@@ -58,7 +56,7 @@ Player.prototype.handleInput = function(dt) {
 //TODO: Create instances for Enemy and Player classes to ensure proper functionality in a Frogger like game.
 
 var allEnemies = [new Enemy];
-player = new Player;
+var player = new Player;
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
