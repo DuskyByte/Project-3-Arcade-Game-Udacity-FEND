@@ -3,11 +3,11 @@ var Enemy = function() {
     
     //TODO: Update Enemy to ensure proper functionality in a Frogger like game.
     
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
+    //Stores the current row and column on board. Starting for all Enemies should be center brick row just off screen
+    this.currentLocation = [2, -1];
+    //Calculates drawing point for the sprite using currentLocation.
+    this.y = ((this.currentLocation[0] * 83) - 20);
+    this.x = (this.currentLocation[1] * 101);
     this.sprite = 'images/enemy-bug.png';
 };
 
@@ -22,7 +22,6 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 };
 
-// Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
@@ -30,8 +29,11 @@ Enemy.prototype.render = function() {
 //TODO: Create Player class to ensure proper functionality in a Frogger like game.
 
 var Player = function() {
-    this.y = 0;
-    this.x = 0;
+    //Stores the current row and column on board.
+    this.currentLocation = [5, 2];
+    //Calculates drawing point for the sprite using currentLocation.
+    this.y = ((this.currentLocation[0] * 83) - 10);
+    this.x = (this.currentLocation[1] * 101);
     this.sprite = 'images/char-boy.png';
 };
 
@@ -46,7 +48,18 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(dt) {
-    
+    if (dt === 'up' && this.currentLocation[0] > 0) {
+        this.currentLocation[0]--;
+    }
+    if (dt === 'down' && this.currentLocation[0] < 5) {
+        this.currentLocation[0]++;
+    }
+    if (dt === 'left' && this.currentLocation[1] > 0) {
+        this.currentLocation[1]--;
+    }
+    if (dt === 'right' && this.currentLocation[1] < 4) {
+        this.currentLocation[1]++;
+    }
 };
 
 // Now instantiate your objects.
