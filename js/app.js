@@ -1,8 +1,9 @@
-// Enemies our player must avoid
-var Enemy = function() {
-    
-    //TODO: Update Enemy to ensure proper functionality in a Frogger like game.
-    
+//TODO: Add collision detection and winning conditions.
+//TODO: Research ES6 classes and impliment.
+//TODO: Collapse classes into a main class and subclasses.
+//TODO: Have the correct subclasses inherit from the correct classes.
+//TODO: Add other functionalities like gems, scores, levels, etc...
+var Enemy = function() {    
     //Stores the current row and column on board. Starting for all Enemies should be center brick row just off screen
     this.currentLocation = [2, -1];
     //Calculates drawing point for the sprite using currentLocation.
@@ -12,18 +13,20 @@ var Enemy = function() {
 };
 
 Enemy.prototype.update = function(dt) {
+    //Prevents Enemies from scrolling off into eternity.
     if (this.currentLocation[1] >= 5) {
         this.currentLocation[1] = -1;
     }
+    //Updates currentLocation based on delta time and speed of Enemy.
+    //TODO: Add ability for different enemy sprites has different speeds.
     this.currentLocation[1] = this.currentLocation[1] + dt;
+    //Updates x coordinates based on currentLocation.
     this.x = (this.currentLocation[1] * 101);
 };
 
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
-
-//TODO: Create Player class to ensure proper functionality in a Frogger like game.
 
 var Player = function() {
     //Stores the current row and column on board.
@@ -34,10 +37,10 @@ var Player = function() {
     this.sprite = 'images/char-boy.png';
 };
 
-//TODO: Create Player class methods (update, render, and handleInput) to ensure proper functionality in a Frogger like game.
-
 Player.prototype.update = function(dt) {
-    
+    //Updates x and y coordinates based on currentLocation.
+    this.y = ((this.currentLocation[0] * 83) - 10);
+    this.x = (this.currentLocation[1] * 101);
 };
 
 Player.prototype.render = function() {
@@ -58,12 +61,6 @@ Player.prototype.handleInput = function(dt) {
         this.currentLocation[1]++;
     }
 };
-
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-
-//TODO: Create instances for Enemy and Player classes to ensure proper functionality in a Frogger like game.
 
 var allEnemies = [new Enemy];
 var player = new Player;
