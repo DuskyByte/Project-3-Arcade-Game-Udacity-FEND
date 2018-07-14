@@ -11,15 +11,12 @@ var Enemy = function() {
     this.sprite = 'images/enemy-bug.png';
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    
-    //TODO: Update Enemy method to ensure proper functionality in a Frogger like game.
-    
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
+    if (this.currentLocation[1] >= 5) {
+        this.currentLocation[1] = -1;
+    }
+    this.currentLocation[1] = this.currentLocation[1] + dt;
+    this.x = (this.currentLocation[1] * 101);
 };
 
 Enemy.prototype.render = function() {
