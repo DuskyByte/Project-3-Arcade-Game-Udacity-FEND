@@ -60,7 +60,7 @@ class Player extends Vechile {
 };
 
 //Builds Enemy a number of sprites (Default: 3)
-function build(difficulty = 3) {
+function buildEnemies(difficulty = 3) {
     let row;
     while (difficulty > 0) {
         if (row < 3) {
@@ -108,5 +108,5 @@ document.addEventListener('keyup', function(input) {
 });
 
 let allEnemies = [];
-build();
+buildEnemies();
 let player = new Player('char-boy', [2, 5]);
