@@ -83,11 +83,26 @@ function addEnemy(row = Math.floor((Math.random() * 3) + 1)) {
 function checkCollisions() {
     //Checks if player is touching an Enemy (Lost)
     allEnemies.forEach(function(enemy) {
+        let tolerance = 58;
         if ((player.y) === (enemy.y)) {
-            if((player.x) < (enemy.x + 58) && (player.x) > (enemy.x - 58)) {
+            if((player.x) < (enemy.x + tolerance) && (player.x) > (enemy.x - tolerance)) {
                 player.currentLocation = [2, 5];
             };
         };
+    });
+    //Checks if an Enemy is touching another Enemy and swaps them.
+    allEnemies.forEach(function(enemy1) {
+        allEnemies.forEach(function(enemy2) {
+            if (!(enemy1 === enemy2)) {
+                if ((enemy1.currentLocation[1]) === (enemy2.currentLocation[1])) {
+                    if((enemy1.currentLocation[0]) >= (enemy2.currentLocation[0] - 1.1) && (enemy1.currentLocation[0]) <= (enemy2.currentLocation[0])) {
+                        if (enemy1.speed > enemy2.speed) {
+                            [enemy1.speed, enemy2.speed] = [enemy2.speed, enemy1.speed];
+                        };
+                    };
+                };
+            };
+        });
     });
     //Checks if player is in the water (Win)
     if (player.currentLocation[1] === 0) {
