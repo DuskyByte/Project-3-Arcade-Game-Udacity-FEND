@@ -137,7 +137,10 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
+        if (conditionScreen === true) {
+            ctx.fillStyle = 'rgba(128, 128, 128, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
         renderEntities();
     }
 
@@ -154,6 +157,10 @@ var Engine = (function(global) {
         });
 
         player.render();
+        
+        allPlayers.forEach(function(sprite) {
+            sprite.render();
+        });
     }
 
     /* This function does nothing but it could have been a good place to
@@ -173,7 +180,19 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
+        'images/Heart.png',
+        'images/Key.png',
+        'images/Rock.png',
+        'images/Selector.png',
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 

@@ -6,7 +6,7 @@ class Vechile {
         this.sprite = 'images/' + image + '.png';
         this.currentLocation = startingLocation;
         this.x = (this.currentLocation[0] * 101);
-        this.y = ((this.currentLocation[1] * 83) - 30);
+        this.y = ((this.currentLocation[1] * 83) - 40);
         //Renders the sprite.
         this.render = function() {
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -23,7 +23,7 @@ class Enemy extends Vechile {
         this.update = function(dt) {
             //Prevents moving Vechile from scrolling off into eternity.
             if (this.currentLocation[0] >= 5) {
-                this.currentLocation[0] = -1;
+                this.currentLocation[0] = -2;
             };
             //Updates currentLocation based on delta time and speed of Vechile.
             this.currentLocation[0] = this.currentLocation[0] + (dt * this.speed);
@@ -35,31 +35,50 @@ class Enemy extends Vechile {
 
 //Player subclass (The sprite that the player is able to move, to interact with the game.)
 class Player extends Vechile {
-    constructor(image, startingLocation) {
+    constructor(image, startingLocation, fullControl) {
         super(image, startingLocation);
+        this.fullControl = fullControl;
         this.update = function(dt) {
             //Updates x and y coordinates based on currentLocation.
             this.x = (this.currentLocation[0] * 101);
-            this.y = ((this.currentLocation[1] * 83) - 30);
+            this.y = ((this.currentLocation[1] * 83) - 40);
         };
         this.handleInput = function(input) {
+            if (this.fullControl === false) {
+                if (input === 'space') {
+                    player = allPlayers[this.currentLocation[0]];
+                    player.currentLocation = [2, 5];
+                    allPlayers = [];
+                    conditionScreen = false;
+                    gameStart.next();
+                };
+            };
             if (input === 'left' && this.currentLocation[0] > 0) {
                 this.currentLocation[0]--;
             };
             if (input === 'right' && this.currentLocation[0] < 4) {
                 this.currentLocation[0]++;
             };
-            if (input === 'up' && this.currentLocation[1] > 0) {
-                this.currentLocation[1]--;
-            };
-            if (input === 'down' && this.currentLocation[1] < 5) {
-                this.currentLocation[1]++;
+            if (this.fullControl === true) {
+                if (input === 'up' && this.currentLocation[1] > 0) {
+                    this.currentLocation[1]--;
+                };
+                if (input === 'down' && this.currentLocation[1] < 5) {
+                    this.currentLocation[1]++;
+                };
             };
         };
     };
 };
 
-//Builds Enemy a number of sprites (Default: 3)
+//Builds Game, allowing for character selection.
+function* buildGame() {
+    buildPlayers();
+    yield 
+    buildEnemies();
+};
+
+//Builds a select number of Enemy sprites in an even spread across rows (Default: 3)
 function buildEnemies(difficulty = 3) {
     let row;
     while (difficulty > 0) {
@@ -73,10 +92,19 @@ function buildEnemies(difficulty = 3) {
     };
 };
 
-//Adds an Enemy to the allEnemies array.
+//Adds an Enemy to the allEnemies array. (Default: randomly asigns Enemies to rows.)
 function addEnemy(row = Math.floor((Math.random() * 3) + 1)) {
     let speed = ((Math.random() * 3) + 1);
-    allEnemies.push(new Enemy('enemy-bug', [-1, row], speed));
+    allEnemies.push(new Enemy('enemy-bug', [-2, row], speed));
+};
+
+function buildPlayers() {
+    let playerSprites = ['char-boy', 'char-cat-girl', 'char-horn-girl', 'char-pink-girl', 'char-princess-girl'];
+    let location = 0;
+    playerSprites.forEach(function(sprite) {
+        allPlayers.push(new Player(sprite, [location, 3], true));
+        location++;
+    });
 };
 
 //Checks for... yep, collisions. Also, allows for losing and winning conditions.
@@ -90,7 +118,7 @@ function checkCollisions() {
             };
         };
     });
-    //Checks if an Enemy is touching another Enemy and swaps them.
+    //Checks if an Enemy is touching another Enemy and swaps their speed. (Null)
     allEnemies.forEach(function(enemy1) {
         allEnemies.forEach(function(enemy2) {
             if (!(enemy1 === enemy2)) {
@@ -104,7 +132,7 @@ function checkCollisions() {
             };
         });
     });
-    //Checks if player is in the water (Win)
+    //Checks if player is in the water (Won)
     if (player.currentLocation[1] === 0) {
         player.currentLocation = [2, 5];
         addEnemy();
@@ -114,6 +142,7 @@ function checkCollisions() {
 //Detects key presses to be sent to Player's handleInput function.
 document.addEventListener('keyup', function(input) {
     const allowedKeys = {
+        32: 'space',
         37: 'left',
         38: 'up',
         39: 'right',
@@ -122,6 +151,9 @@ document.addEventListener('keyup', function(input) {
     player.handleInput(allowedKeys[input.keyCode]);
 });
 
+let conditionScreen = true;
+let player = new Player('Selector', [2, 3], false);
+let allPlayers = [];
 let allEnemies = [];
-buildEnemies();
-let player = new Player('char-boy', [2, 5]);
+let gameStart = buildGame();
+gameStart.next();
