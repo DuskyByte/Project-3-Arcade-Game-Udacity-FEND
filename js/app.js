@@ -46,24 +46,31 @@ class Player extends Vechile {
         this.handleInput = function(input) {
             if (this.fullControl === false) {
                 if (input === 'space') {
-                    player = allPlayers[this.currentLocation[0]];
-                    player.currentLocation = [2, 5];
-                    allPlayers = [];
-                    conditionScreen = false;
-                    gameStart.next();
+                    if (allPlayers[this.currentLocation[0]].fullControl) {
+                        [player, allPlayers[this.currentLocation[0]]] = [allPlayers[this.currentLocation[0]], player];
+                        player.currentLocation = [this.currentLocation[0], 5];
+                        conditionScreen = false;
+                        gameStart.next();
+                    };
+                };
+                if (input === 'left' && this.currentLocation[0] > 0) {
+                    this.currentLocation[0]--;
+                };
+                if (input === 'right' && this.currentLocation[0] < 4) {
+                    this.currentLocation[0]++;
                 };
             };
-            if (input === 'left' && this.currentLocation[0] > 0) {
-                this.currentLocation[0]--;
-            };
-            if (input === 'right' && this.currentLocation[0] < 4) {
-                this.currentLocation[0]++;
-            };
             if (this.fullControl === true) {
+                if (input === 'left' && this.currentLocation[0] > 0 && this.currentLocation[1] < 5) {
+                    this.currentLocation[0]--;
+                };
+                if (input === 'right' && this.currentLocation[0] < 4 && this.currentLocation[1] < 5) {
+                    this.currentLocation[0]++;
+                };
                 if (input === 'up' && this.currentLocation[1] > 0) {
                     this.currentLocation[1]--;
                 };
-                if (input === 'down' && this.currentLocation[1] < 5) {
+                if (input === 'down' && this.currentLocation[1] < 4) {
                     this.currentLocation[1]++;
                 };
             };
@@ -98,23 +105,35 @@ function addEnemy(row = Math.floor((Math.random() * 3) + 1)) {
     allEnemies.push(new Enemy('enemy-bug', [-2, row], speed));
 };
 
+//Builds the player sprites. This allows player to select their character for each life they have.
 function buildPlayers() {
     let playerSprites = ['char-boy', 'char-cat-girl', 'char-horn-girl', 'char-pink-girl', 'char-princess-girl'];
     let location = 0;
     playerSprites.forEach(function(sprite) {
-        allPlayers.push(new Player(sprite, [location, 3], true));
+        allPlayers.push(new Player(sprite, [location, 5], true));
         location++;
     });
 };
 
+function scoreHandler (points, win) {
+    if (win === true) {
+        score += points * won;
+    } else {
+        score += points;
+    };
+};
+
 //Checks for... yep, collisions. Also, allows for losing and winning conditions.
 function checkCollisions() {
-    //Checks if player is touching an Enemy (Lost)
+    //Checks if player is touching an Enemy and reconfigures canvas to select next character. (Lost)
     allEnemies.forEach(function(enemy) {
         let tolerance = 58;
         if ((player.y) === (enemy.y)) {
             if((player.x) < (enemy.x + tolerance) && (player.x) > (enemy.x - tolerance)) {
-                player.currentLocation = [2, 5];
+                conditionScreen = true;
+                player = new Player('Selector', [2, 5], false);
+                players--;
+                scoreHandler(100, false);
             };
         };
     });
@@ -132,10 +151,14 @@ function checkCollisions() {
             };
         });
     });
-    //Checks if player is in the water (Won)
+    //Checks if player is in the water and reconfigures canvas to select next character. (Won)
     if (player.currentLocation[1] === 0) {
-        player.currentLocation = [2, 5];
+        conditionScreen = true;
+        player = new Player('Selector', [2, 5], false);
         addEnemy();
+        players--;
+        won++;
+        scoreHandler(1000, true);
     };
 };
 
@@ -152,7 +175,10 @@ document.addEventListener('keyup', function(input) {
 });
 
 let conditionScreen = true;
-let player = new Player('Selector', [2, 3], false);
+let players = 5;
+let won = 1;
+let score = 0;
+let player = new Player('Selector', [2, 5], false);
 let allPlayers = [];
 let allEnemies = [];
 let gameStart = buildGame();

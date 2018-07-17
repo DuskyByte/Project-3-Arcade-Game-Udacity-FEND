@@ -56,7 +56,7 @@ var Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
-    }
+    };
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
@@ -66,7 +66,7 @@ var Engine = (function(global) {
         reset();
         lastTime = Date.now();
         main();
-    }
+    };
 
     /* This function is called by main (our game loop) and itself calls all
      * of the functions which may need to update entity's data. Based on how
@@ -80,7 +80,7 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         checkCollisions();
-    }
+    };
 
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
@@ -94,7 +94,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
-    }
+    };
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -107,17 +107,17 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
-            ],
+            'images/water-block.png',   // Top row is water
+            'images/stone-block.png',   // Row 1 of 3 of stone
+            'images/stone-block.png',   // Row 2 of 3 of stone
+            'images/stone-block.png',   // Row 3 of 3 of stone
+            'images/grass-block.png',   // Row 1 of 2 of grass
+            'images/grass-block.png'    // Row 2 of 2 of grass
+        ],
             numRows = 6,
             numCols = 5,
             row, col;
-        
+
         // Before drawing, clear existing canvas
         ctx.clearRect(0,0,canvas.width,canvas.height)
 
@@ -135,14 +135,14 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
-            }
-        }
+            };
+        };
         if (conditionScreen === true) {
             ctx.fillStyle = 'rgba(128, 128, 128, 0.8)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+        };
         renderEntities();
-    }
+    };
 
     /* This function is called by the render function and is called on each game
      * tick. Its purpose is to then call the render functions you have defined
@@ -153,15 +153,33 @@ var Engine = (function(global) {
          * the render function you have defined.
          */
         allEnemies.forEach(function(enemy) {
-            enemy.render();
+            if (conditionScreen === false) {
+                enemy.render();
+            };
         });
-
-        player.render();
-        
+        if (players > 0) {
+            let fontHeight = 30;
+            ctx.font = '24px serif'
+            ctx.textAlign = 'left';
+            ctx.fillStyle = 'rgba(158, 10, 10, 1)';
+            ctx.fillText('Lives: ' + players, 10, fontHeight, canvas.width);
+            ctx.textAlign = 'right';
+            ctx.fillText('Score: ' + score, (canvas.width - 10), fontHeight, canvas.width);
+           player.render();
+        } else {
+            let fontHeight = 60;
+            ctx.font = '52px serif'
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(158, 10, 10, 1)';
+            ctx.fillText('You finished the game!', (canvas.width / 2), ((canvas.height / 2) - (fontHeight/2)), canvas.width);
+            ctx.fillText('Final Score: ' + score, (canvas.width / 2), ((canvas.height / 2) + (fontHeight/2)), canvas.width);
+        };
         allPlayers.forEach(function(sprite) {
-            sprite.render();
+            if (sprite.fullControl) {
+                sprite.render();
+            };
         });
-    }
+    };
 
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
@@ -169,7 +187,7 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
-    }
+    };
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
