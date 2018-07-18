@@ -22,7 +22,8 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime,
+        finalDraw = false;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -137,6 +138,9 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             };
         };
+        /*Sets a grey fade over game board when selecting characters or anouncing
+         *end score. aka. changing the condition of the game.
+         */
         if (conditionScreen === true) {
             ctx.fillStyle = 'rgba(128, 128, 128, 0.8)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -158,20 +162,31 @@ var Engine = (function(global) {
             };
         });
         if (players > 0) {
+            let playTime;
+            if (startTime === undefined) {
+                playTime = '0:00:00';
+            } else {
+                playTime = formatTime((Date.now() - startTime));
+            };
             let fontHeight = 30;
             ctx.font = '24px serif'
             ctx.textAlign = 'left';
             ctx.fillStyle = 'rgba(158, 10, 10, 1)';
-            ctx.fillText('Lives: ' + players, 10, fontHeight, canvas.width);
+            ctx.fillText('Time: ' + playTime, 10, fontHeight, canvas.width);
             ctx.textAlign = 'right';
             ctx.fillText('Score: ' + score, (canvas.width - 10), fontHeight, canvas.width);
-           player.render();
+            //TODO: Add functionality for hearts, to indicate number of lives left.
+            player.render();
         } else {
             let fontHeight = 60;
             ctx.font = '52px serif'
             ctx.textAlign = 'center';
             ctx.fillStyle = 'rgba(158, 10, 10, 1)';
             ctx.fillText('You finished the game!', (canvas.width / 2), ((canvas.height / 2) - (fontHeight/2)), canvas.width);
+            if (finalDraw === false) {
+                scoreHandler(0, false, true);
+                finalDraw = true;
+            };
             ctx.fillText('Final Score: ' + score, (canvas.width / 2), ((canvas.height / 2) + (fontHeight/2)), canvas.width);
         };
         allPlayers.forEach(function(sprite) {
@@ -203,14 +218,14 @@ var Engine = (function(global) {
         'images/char-horn-girl.png',
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
-        'images/Gem Blue.png',
-        'images/Gem Green.png',
-        'images/Gem Orange.png',
-        'images/Heart.png',
-        'images/Key.png',
-        'images/Rock.png',
+        //'images/Gem Blue.png',
+        //'images/Gem Green.png',
+        //'images/Gem Orange.png',
+        //'images/Heart.png',
+        //'images/Key.png',
+        //'images/Rock.png',
         'images/Selector.png',
-        'images/Star.png'
+        //'images/Star.png'
     ]);
     Resources.onReady(init);
 

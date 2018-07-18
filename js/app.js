@@ -33,12 +33,21 @@ class Enemy extends Vechile {
     };
 };
 
+/*Special subclass (All sprites that gives the players points or special abilities.)
+ *TODO: Add functionality for Gems, Rock, and Key.
+  *class Special extends Vechile {
+  *    constuctor(image, startingLocation) {
+  *        super(image, startingLocation);
+  *    };
+  *};
+  */
+
 //Player subclass (The sprite that the player is able to move, to interact with the game.)
 class Player extends Vechile {
     constructor(image, startingLocation, fullControl) {
         super(image, startingLocation);
         this.fullControl = fullControl;
-        this.update = function(dt) {
+        this.update = function() {
             //Updates x and y coordinates based on currentLocation.
             this.x = (this.currentLocation[0] * 101);
             this.y = ((this.currentLocation[1] * 83) - 40);
@@ -81,7 +90,8 @@ class Player extends Vechile {
 //Builds Game, allowing for character selection.
 function* buildGame() {
     buildPlayers();
-    yield 
+    yield
+    startTime = Date.now();
     buildEnemies();
 };
 
@@ -115,11 +125,18 @@ function buildPlayers() {
     });
 };
 
-function scoreHandler (points, win) {
+//Handles the math for the game score.
+function scoreHandler (points, win, final) {
     if (win === true) {
         score += points * won;
     } else {
         score += points;
+    };
+    if (final === true) {
+        score = Math.floor((score - (((Date.now() - startTime) / 1000) * (6 - won))));
+        if (score < 0) {
+            score = 0;
+        };
     };
 };
 
@@ -133,7 +150,7 @@ function checkCollisions() {
                 conditionScreen = true;
                 player = new Player('Selector', [2, 5], false);
                 players--;
-                scoreHandler(100, false);
+                scoreHandler(100, false, false);
             };
         };
     });
@@ -158,9 +175,27 @@ function checkCollisions() {
         addEnemy();
         players--;
         won++;
-        scoreHandler(1000, true);
+        scoreHandler(1000, true, false);
     };
 };
+
+//Formats the time to make it human readable.
+function formatTime(time) {
+    time = Math.floor(time / 1000);
+    let hours = Math.floor(time / 3600);
+    let minutes = Math.floor((time - (hours * 3600)) / 60);
+    let seconds = time - (hours * 3600) - (minutes * 60);
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    if (seconds < 10) {
+        seconds = "0" + seconds;
+    }
+    return hours + ":" + minutes + ":" + seconds;
+}
 
 //Detects key presses to be sent to Player's handleInput function.
 document.addEventListener('keyup', function(input) {
@@ -181,5 +216,6 @@ let score = 0;
 let player = new Player('Selector', [2, 5], false);
 let allPlayers = [];
 let allEnemies = [];
+let startTime;
 let gameStart = buildGame();
 gameStart.next();
