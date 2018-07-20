@@ -81,6 +81,7 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        nicerEnemies();
         updateEntities(dt);
     }
 
@@ -145,6 +146,12 @@ var Engine = (function(global) {
         if (conditionScreen === true) {
             ctx.fillStyle = 'rgba(128, 128, 128, 0.8)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (players > 0) {
+                ctx.font = '52px serif';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'rgba(158, 10, 10, 1)';
+                ctx.fillText('Press [SPACE] to Continue', (canvas.width / 2), (canvas.height / 2), canvas.width);
+            }
         }
         renderEntities();
     }
